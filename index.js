@@ -113,6 +113,31 @@ app.get("/info", async (req, res) => {
   }
 });
 
+
+
+app.post("/all-stars", async(req, res) => {
+  const maxMag = parseFloat(req.body.maxmag); // Stellen Sie sicher, dass maxmag eine Zahl ist
+  if (isNaN(maxMag)) {
+    return res.status(400).send("maxmag muss eine gültige Zahl sein.");
+  }
+  
+  try {
+    await mongoClient.connect();
+    const database = mongoClient.db("myDB"); // Datenbank auswählen
+    const collection = database.collection("stars");
+
+    // Erstellen Sie die Abfrage, um Sterne basierend auf der Helligkeit zu filtern
+    const query = { mag: { $lte: maxMag } };
+    const results = await collection.find(query).toArray(); // Suchen und in ein Array konvertieren
+
+    res.json(results); // Ergebnisse als JSON senden
+  } catch (e) {
+    console.error(e);
+    res.status(500).send("Fehler bei der Datenbankverbindung oder -abfrage.");
+  } finally {
+    await mongoClient.close(); // Datenbankverbindung schließen
+  }
+});
 const PORT = process.env.USERSERVICE_PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server läuft auf Port ${PORT}`);
