@@ -37,17 +37,35 @@ app.get("/stars/:constellation", async (req, res) => {
   const constellation = req.params.constellation;
 
   try {
-    // const stars = await collection.aggregate([
-    //   { $match: { con: constellation } }, // Filtern nach Sternbild
-    //   { $group: { _id: '$con', stars: { $push: '$$ROOT' } } }, // Gruppieren nach Sternbild
-    // ]).toArray();
     const stars = await collection.find({ con: constellation }).toArray();
     const starsWithProper = stars.filter(
       (star) => star.proper !== null && star.proper !== undefined
-    ); // Filtern nach 'proper'-Attribut      console.log(starringstars);
-    // console.log(typeof stars);
-    // console.log(starsWithProper);
+    );
     res.json(stars);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+app.post("/stars", async (req, res) => {
+  await mongoClient.connect();
+  const database = mongoClient.db("myDB"); // Datenbank auswählen
+  const collection = database.collection("stars"); // Sammlung auswählen
+  
+  const maxmag = parseFloat(req.body.maxmag); // sicherstellen, dass maxmag ein Float ist
+  const constellation = req.body.constellation;
+
+  console.log(maxmag, constellation);
+
+  try {
+    // Abfrage, um nur Sterne der spezifischen Konstellation und mit einem kleineren mag Wert als maxmag zu finden
+    const query = { con: constellation, mag: { $lt: maxmag } };
+    const stars = await collection.find(query).toArray();
+
+    // Filtern um sicherzustellen, dass die Eigenschaft 'proper' vorhanden ist
+    const starsWithProper = stars.filter(star => star.proper !== null && star.proper !== undefined);
+
+    res.json(starsWithProper);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal Server Error" });
