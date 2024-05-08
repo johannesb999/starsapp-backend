@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const uri = process.env.MONGODB_URI;
+const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
 const mongoClient = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -51,7 +51,7 @@ app.post("/stars", async (req, res) => {
   await mongoClient.connect();
   const database = mongoClient.db("myDB"); // Datenbank auswählen
   const collection = database.collection("stars"); // Sammlung auswählen
-
+  
   const maxmag = parseFloat(req.body.maxmag); // sicherstellen, dass maxmag ein Float ist
   const constellation = req.body.constellation;
 
@@ -63,9 +63,7 @@ app.post("/stars", async (req, res) => {
     const stars = await collection.find(query).toArray();
 
     // Filtern um sicherzustellen, dass die Eigenschaft 'proper' vorhanden ist
-    const starsWithProper = stars.filter(
-      (star) => star.proper !== null && star.proper !== undefined
-    );
+    const starsWithProper = stars.filter(star => star.proper !== null && star.proper !== undefined);
 
     res.json(starsWithProper);
   } catch (err) {
@@ -133,12 +131,14 @@ app.get("/info", async (req, res) => {
   }
 });
 
-app.post("/all-stars", async (req, res) => {
+
+
+app.post("/all-stars", async(req, res) => {
   const maxMag = parseFloat(req.body.maxmag); // Stellen Sie sicher, dass maxmag eine Zahl ist
   if (isNaN(maxMag)) {
     return res.status(400).send("maxmag muss eine gültige Zahl sein.");
   }
-
+  
   try {
     await mongoClient.connect();
     const database = mongoClient.db("myDB"); // Datenbank auswählen
