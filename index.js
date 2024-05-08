@@ -72,6 +72,10 @@ app.post("/stars", async (req, res) => {
   }
 });
 
+app.get("/test", async(req, res) => {
+  res.status(200).send("LOOOL");
+})
+
 app.get("/hauptkonstellationen", async (req, res) => {
   try {
     await mongoClient.connect();
