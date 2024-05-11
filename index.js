@@ -163,7 +163,7 @@ app.post("/all-stars", async(req, res) => {
         z0: 1, // z-Koordinate
         con: 1, // Sternbild
         ci: 1, // Farbindex
-        absmmag:1,
+        absmag:1,
       },
     };
 
