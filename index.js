@@ -150,12 +150,28 @@ app.post("/all-stars", async(req, res) => {
 
     // Erstellen Sie die Abfrage, um Sterne basierend auf der Helligkeit zu filtern
     const query = { mag: { $lte: maxMag } };
-    const results = await collection.find(query).toArray(); // Suchen und in ein Array konvertieren
+
+    // Definieren Sie die Felder, die Sie aus der Datenbank abrufen möchten
+    const options = {
+      projection: {
+        _id: 1, // MongoDB ObjectId
+        id: 1, // Stern ID
+        dist: 1, // Entfernung
+        mag: 1, // Sichtbare Helligkeit
+        x0: 1, // x-Koordinate
+        y0: 1, // y-Koordinate
+        z0: 1, // z-Koordinate
+        con: 1, // Sternbild
+        ci: 1, // Farbindex
+      },
+    };
+
+    const results = await collection.find(query, options).toArray(); // Suchen mit Optionen und in ein Array konvertieren
 
     res.json(results); // Ergebnisse als JSON senden
   } catch (e) {
     console.error(e);
-    res.status(500).send("Fehler bei der Datenbankverbindung oder -abfrage.");
+    res.status(500). send("Fehler bei der Datenbankverbindung oder -abfrage.");
   } finally {
     await mongoClient.close(); // Datenbankverbindung schließen
   }
