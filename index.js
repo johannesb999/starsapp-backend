@@ -135,6 +135,28 @@ app.get("/info", async (req, res) => {
   }
 });
 
+app.post('/kamel', async (req, res) => {
+  const hipNumbers = req.body; // Erwarte ein Array von HIP-Nummern
+  try {
+      await mongoClient.connect();
+      const database = mongoClient.db("myDB");
+      const collection = database.collection("stars");
+
+      // Abfrage in der Datenbank mit den übergebenen HIP-Nummern
+      const stars = await collection.find({
+          hip: { $in: hipNumbers }
+      }, {
+          projection: { x0: 1, y0: 1, z0: 1 } // Nur x0, y0, z0 Felder abrufen
+      }).toArray();
+
+      res.json(stars); // Sende die gefilterten Daten zurück zum Client
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Ein Fehler ist aufgetreten" });
+  } finally {
+      await mongoClient.close();
+  }
+});
 
 
 app.post("/all-stars", async(req, res) => {
