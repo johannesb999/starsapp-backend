@@ -146,7 +146,7 @@ app.post('/hip', async (req, res) => {
       const stars = await collection.find({
           hip: { $in: hipNumbers }
       }, {
-          projection: { x0: 1, y0: 1, z0: 1, dist: 1, ra: 1, dec: 1, } // Nur x0, y0, z0 Felder abrufen
+          projection: { x0: 1, y0: 1, z0: 1, dist: 1, ra: 1, dec: 1, hip: 1, } // Nur x0, y0, z0 Felder abrufen
       }).toArray();
 
       res.json(stars); // Sende die gefilterten Daten zurück zum Client
@@ -168,7 +168,7 @@ app.post('/tyc', async (req, res) => {
       const stars = await collection.find({
           tyc: { $in: tycNumbers }
       }, {
-          projection: { x0: 1, y0: 1, z0: 1, dist: 1, ra: 1, dec: 1, } // Nur x0, y0, z0 Felder abrufen
+          projection: { x0: 1, y0: 1, z0: 1, dist: 1, ra: 1, dec: 1, tyc: 1, } // Nur x0, y0, z0 Felder abrufen
       }).toArray();
 
       res.json(stars); // Sende die gefilterten Daten zurück zum Client
