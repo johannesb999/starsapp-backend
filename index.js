@@ -208,6 +208,9 @@ app.post("/all-stars", async(req, res) => {
         con: 1, // Sternbild
         ci: 1, // Farbindex
         absmag:1,
+        ra: 1,
+        dec: 1,
+        
       },
     };
 
