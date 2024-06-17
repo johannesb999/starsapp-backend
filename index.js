@@ -180,6 +180,23 @@ app.post('/tyc', async (req, res) => {
   }
 });
 
+app.get("/top111", async (req, res) => {
+  try {
+    await client.connect();
+    const db = client.db(dbName);
+    const collection = db.collection('stars');
+
+    // Finden Sie die 100 hellsten Sterne und geben Sie nur die IDs zurück
+    const result = await collection.find({}, { projection: { _id: 0, id: 1 } }).sort({mag: 1}).limit(100).toArray();
+
+    // Senden Sie das Ergebnis an den Client
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Ein Fehler ist aufgetreten");
+  }
+});
+
 
 app.post("/all-stars", async(req, res) => {
   const maxMag = parseFloat(req.body.maxmag); // Stellen Sie sicher, dass maxmag eine Zahl ist
