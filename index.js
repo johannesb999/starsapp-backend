@@ -51,7 +51,7 @@ app.post("/stars", async (req, res) => {
   await mongoClient.connect();
   const database = mongoClient.db("myDB"); // Datenbank auswählen
   const collection = database.collection("stars"); // Sammlung auswählen
-  
+
   const maxmag = parseFloat(req.body.maxmag); // sicherstellen, dass maxmag ein Float ist
   const constellation = req.body.constellation;
 
@@ -63,7 +63,9 @@ app.post("/stars", async (req, res) => {
     const stars = await collection.find(query).toArray();
 
     // Filtern um sicherzustellen, dass die Eigenschaft 'proper' vorhanden ist
-    const starsWithProper = stars.filter(star => star.proper !== null && star.proper !== undefined);
+    const starsWithProper = stars.filter(
+      (star) => star.proper !== null && star.proper !== undefined
+    );
 
     res.json(starsWithProper);
   } catch (err) {
@@ -72,9 +74,9 @@ app.post("/stars", async (req, res) => {
   }
 });
 
-app.get("/test", async(req, res) => {
+app.get("/test", async (req, res) => {
   res.status(200).send("LOOOL");
-})
+});
 
 app.get("/hauptkonstellationen", async (req, res) => {
   try {
@@ -135,75 +137,95 @@ app.get("/info", async (req, res) => {
   }
 });
 
-app.post('/hip', async (req, res) => {
+app.post("/hip", async (req, res) => {
   const hipNumbers = req.body; // Erwarte ein Array von HIP-Nummern
   try {
-      await mongoClient.connect();
-      const database = mongoClient.db("myDB");
-      const collection = database.collection("stars");
+    await mongoClient.connect();
+    const database = mongoClient.db("myDB");
+    const collection = database.collection("stars");
 
-      // Abfrage in der Datenbank mit den übergebenen HIP-Nummern
-      const stars = await collection.find({
-          hip: { $in: hipNumbers }
-      }, {
-          projection: { x0: 1, y0: 1, z0: 1, dist: 1, ra: 1, dec: 1, hip: 1, } // Nur x0, y0, z0 Felder abrufen
-      }).toArray();
+    // Abfrage in der Datenbank mit den übergebenen HIP-Nummern
+    const stars = await collection
+      .find(
+        {
+          hip: { $in: hipNumbers },
+        },
+        {
+          projection: { x0: 1, y0: 1, z0: 1, dist: 1, ra: 1, dec: 1, hip: 1 }, // Nur x0, y0, z0 Felder abrufen
+        }
+      )
+      .toArray();
 
-      res.json(stars); // Sende die gefilterten Daten zurück zum Client
+    res.json(stars); // Sende die gefilterten Daten zurück zum Client
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Ein Fehler ist aufgetreten" });
+    console.error(error);
+    res.status(500).json({ message: "Ein Fehler ist aufgetreten" });
   } finally {
-      await mongoClient.close();
+    await mongoClient.close();
   }
 });
-app.post('/tyc', async (req, res) => {
+app.post("/tyc", async (req, res) => {
   const tycNumbers = req.body; // Erwarte ein Array von HIP-Nummern
   try {
-      await mongoClient.connect();
-      const database = mongoClient.db("myDB");
-      const collection = database.collection("stars");
+    await mongoClient.connect();
+    const database = mongoClient.db("myDB");
+    const collection = database.collection("stars");
 
-      // Abfrage in der Datenbank mit den übergebenen HIP-Nummern
-      const stars = await collection.find({
-          tyc: { $in: tycNumbers }
-      }, {
-          projection: { x0: 1, y0: 1, z0: 1, dist: 1, ra: 1, dec: 1, tyc: 1, } // Nur x0, y0, z0 Felder abrufen
-      }).toArray();
+    // Abfrage in der Datenbank mit den übergebenen HIP-Nummern
+    const stars = await collection
+      .find(
+        {
+          tyc: { $in: tycNumbers },
+        },
+        {
+          projection: { x0: 1, y0: 1, z0: 1, dist: 1, ra: 1, dec: 1, tyc: 1 }, // Nur x0, y0, z0 Felder abrufen
+        }
+      )
+      .toArray();
 
-      res.json(stars); // Sende die gefilterten Daten zurück zum Client
+    res.json(stars); // Sende die gefilterten Daten zurück zum Client
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Ein Fehler ist aufgetreten" });
+    console.error(error);
+    res.status(500).json({ message: "Ein Fehler ist aufgetreten" });
   } finally {
-      await mongoClient.close();
+    await mongoClient.close();
   }
 });
 
 app.get("/top111", async (req, res) => {
   try {
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection('stars');
+    await mongoClient.connect();
+    const db = mongoClient.db("myDB");
+    const collection = db.collection("stars");
+    const result = await collection
+      .find(
+        {},
+        {
+          projection: {
+            _id: 0,
+            id: 1,
+          },
+        }
+      )
+      .sort({ mag: 1 })
+      .limit(100)
+      .toArray();
 
-    // Finden Sie die 100 hellsten Sterne und geben Sie nur die IDs zurück
-    const result = await collection.find({}, { projection: { _id: 0, id: 1 } }).sort({mag: 1}).limit(100).toArray();
-
-    // Senden Sie das Ergebnis an den Client
     res.json(result);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Ein Fehler ist aufgetreten");
+    res
+      .status(500)
+      .json({ message: "Ein Fehler ist aufgetret", error: error.message }); 
   }
 });
 
-
-app.post("/all-stars", async(req, res) => {
+app.post("/all-stars", async (req, res) => {
   const maxMag = parseFloat(req.body.maxmag); // Stellen Sie sicher, dass maxmag eine Zahl ist
   if (isNaN(maxMag)) {
     return res.status(400).send("maxmag muss eine gültige Zahl sein.");
   }
-  
+
   try {
     await mongoClient.connect();
     const database = mongoClient.db("myDB"); // Datenbank auswählen
@@ -224,10 +246,9 @@ app.post("/all-stars", async(req, res) => {
         z0: 1, // z-Koordinate
         con: 1, // Sternbild
         ci: 1, // Farbindex
-        absmag:1,
+        absmag: 1,
         ra: 1,
         dec: 1,
-
       },
     };
 
@@ -236,7 +257,7 @@ app.post("/all-stars", async(req, res) => {
     res.json(results); // Ergebnisse als JSON senden
   } catch (e) {
     console.error(e);
-    res.status(500). send("Fehler bei der Datenbankverbindung oder -abfrage.");
+    res.status(500).send("Fehler bei der Datenbankverbindung oder -abfrage.");
   } finally {
     await mongoClient.close(); // Datenbankverbindung schließen
   }
