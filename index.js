@@ -227,7 +227,7 @@ app.post("/all-stars", async(req, res) => {
         absmag:1,
         ra: 1,
         dec: 1,
-
+        proper: 1,
       },
     };
 
