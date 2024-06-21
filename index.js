@@ -249,7 +249,11 @@ app.post("/all-stars", async (req, res) => {
         absmag: 1,
         ra: 1,
         dec: 1,
-        proper: 1,  
+        proper: 1, 
+        wikiUrl: 1, 
+        hip: 1,
+        tyc: 1,
+        gaia: 1,
       },
     };
 
