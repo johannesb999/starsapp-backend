@@ -254,6 +254,7 @@ app.post("/all-stars", async (req, res) => {
         hip: 1,
         tyc: 1,
         gaia: 1,
+        flam: 1,
       },
     };
 
