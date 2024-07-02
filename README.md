@@ -21,7 +21,7 @@ Zusätzlich können sich Nutzer Fakten zu Sternen direkt über Wikipedia anzeige
 
 
 
-![Sternbild](https://github.com/johannesb999/starsapp-backend/blob/main/Bild2.svg?raw=true)
+![Sternbild](https://github.com/johannesb999/starsapp-backend/blob/main/Bild3.png?raw=true)
 
 ## Verknüpfte Repositories
 
